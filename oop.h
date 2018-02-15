@@ -3,10 +3,11 @@ LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 #define sx 20
 #define sy 4
 #define linelength 64
+#define lines 8
 
 class Line{
   char buff[linelength];
-  char index,y;
+  char index;
 public:
   Line(){
     index=0;
@@ -22,33 +23,27 @@ public:
       buff[--index]=NULL;
     }
   }
-  void draw(){
-    char c;
-    char x=index;
-    /*for(int i=0;i<linelength;i++){
-      if(buff[i]==NULL){
-        x=i;
-        break;
+  void draw(char y){
+    if(y>=0){
+      char c;
+      char x=index;
+      if(x<sx){
+        lcd.setCursor(0,y);
+        for(int i=0;i<x;i++){
+          lcd.write(buff[i]);
+        }
+        for(int i=1;i<sx-x;i++){
+          lcd.write(' ');
+        }
+        lcd.setCursor(x,y);
       }
-    }*/
-    if(x<sx){
-      lcd.setCursor(0,this->y);
-      for(int i=0;i<x;i++){
-        lcd.write(buff[i]);
-      }
-      for(int i=1;i<sx-x;i++){
-        lcd.write(' ');
-      }
-      lcd.setCursor(x,y);
-    }else{
-      lcd.setCursor(0,this->y);
-      for(int i=x-sx+1;i<x;i++){
-        lcd.write(buff[i]);
+      else{
+        lcd.setCursor(0,y);
+        for(int i=x-sx+1;i<x;i++){
+          lcd.write(buff[i]);
+        }
       }
     }
-  }
-  void setY(char y){
-    this->y=y;
   }
   char *getbuff(){
     return this->buff;
@@ -73,39 +68,40 @@ public:
 };
 
 class Screen{
-  Line l1,l2,l3,l4;
+  Line line[lines];
 public:
-  Screen(){
-    this->l1.setY(0);
-    this->l2.setY(1);
-    this->l3.setY(2);
-    this->l4.setY(3);
-  }
   void add(char c){
-    l4.add(c);
+    line[lines-1].add(c);
   }
   void drawAll(){
-    l1.draw();
-    l2.draw();
-    l3.draw();
-    l4.draw();
+    for(int i=0;i<lines;i++){
+      this->line[i].draw(sy-lines+i); 
+    }
   }
   void draw(){
-    l4.draw();
+    line[lines-1].draw(sy-1);
   }
   void del(){
-    l4.del();
+    line[lines-1].del();
   }
   void enter(){
-    l1.setbuff(l2.getbuff());
-    l1.setIndex(l2.getIndex());
-    l2.setbuff(l3.getbuff());
-    l2.setIndex(l3.getIndex());
-    l3.setbuff(l4.getbuff());
-    l3.setIndex(l4.getIndex());
-    l4.clear();
+    for(int i=lines-1;i>=1;i--){
+      line[lines-1-i].setbuff(line[lines-i].getbuff());
+      line[lines-1-i].setIndex(line[lines-i].getIndex());
+    }
+    line[lines-1].clear();
+    this->drawAll();
+  }
+  void back(){
+    for(int i=0;i<lines-1;i++){
+      line[lines-1-i].setbuff(line[lines-i-2].getbuff());
+      line[lines-1-i].setIndex(line[lines-i-2].getIndex());
+    }
+    line[0].clear();
     this->drawAll();
   }
 };
+
+
 
 

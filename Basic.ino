@@ -17,8 +17,9 @@ void loop() {
     while (Serial.available() > 0) {
       // display each character to the LCD
       char c=Serial.read();
-      if(c==']') s.del();
+      if(c==']') s.back();
       else if(c=='[') s.enter();
+      else if(c=='\\') s.del();
       else s.add(c);
       s.draw();
     }
