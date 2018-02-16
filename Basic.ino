@@ -6,8 +6,11 @@ void setup() {
   Serial.begin(9600);
   lcd.begin(sx, sy);
   lcd.cursor();
-  lcd.setCursor(0,3);
-  lcd.print(sizeof(s));
+  s.print("Arduino-BASIC v0.1");
+  s.enter();
+  s.print("Used "+String(sizeof(s)+sizeof(lcd))+"B");
+  s.enter();
+  s.enter();
 }
 
 

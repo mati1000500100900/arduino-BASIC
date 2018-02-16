@@ -100,6 +100,9 @@ public:
     line[0].clear();
     this->drawAll();
   }
+  void print(String s){
+    for(int i=0;i<s.length();i++) this->add(s[i]);
+  }
 };
 
 
