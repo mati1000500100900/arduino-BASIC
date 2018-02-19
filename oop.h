@@ -1,4 +1,4 @@
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+LiquidCrystal lcd(12, 11, 8, 7, 4, 3);
 
 #define sx 20
 #define sy 4
@@ -102,6 +102,12 @@ public:
   }
   void print(String s){
     for(int i=0;i<s.length();i++) this->add(s[i]);
+  }
+  char *getCommand(){
+    return line[lines-2].getbuff();
+  }
+  char getIndex(){
+    return line[lines-2].getIndex();
   }
 };
 
