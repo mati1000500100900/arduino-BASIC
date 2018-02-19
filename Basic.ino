@@ -62,10 +62,8 @@ void interpret() {
     else if (command.indexOf('\'') != -1) {
       s.print(command.substring(command.indexOf('\'') + 1, command.lastIndexOf('\'')));
     }
-    else if (mathEngine(command.substring(command.indexOf(' ') + 1))) {
-    }
     else {
-      s.print("SYNTAX ERROR");
+      s.print(mathEngine(command.substring(command.indexOf(' ') + 1)));
     }
     s.enter();
   }
@@ -81,74 +79,66 @@ void interpret() {
     s.enter();
   }
 }
+String mathEngine(String input) {
+  s.print(input);
+  s.enter();
+  if ((input.indexOf('(') != -1 && input.indexOf(')') != -1) || input.indexOf('^') != -1 || input.indexOf('*') != -1 || input.indexOf('/') != -1 || input.indexOf('+') != -1 || input.indexOf('-') != -1) {
+    if (input.indexOf('(') != -1 && input.indexOf(')') != -1) {
+      return mathEngine(input.substring(0, input.indexOf('(')) + mathEngine(input.substring(input.indexOf('(') + 1, input.indexOf(')'))) + input.substring(input.indexOf(')') + 1));
+    }
+    else {
+      char i = -1;
+      if (input.indexOf('^') != -1) i = input.indexOf('^');
+      else if (input.indexOf('*') != -1 || input.indexOf('/') != -1) {
+        i = minornot(input.indexOf('*'), input.indexOf('/'));
+      }
+      else if (input.indexOf('+') != -1 || input.indexOf('-') != -1) {
+        i = minornot(input.indexOf('+'), input.indexOf('-'));
+      }
 
-boolean mathEngine(String input) {
-  float x, y;
-  String cache;
-  if (input.indexOf('+') != -1) {
-    cache = input.substring(0, input.indexOf('+'));
-    cache.trim();
-    x = cache.toFloat();
-    cache = input.substring(input.indexOf('+') + 1);
-    cache.trim();
-    y = cache.toFloat();
-    s.print(String(x + y));
-    return 1;
+      if (i == -1) {
+        return input;
+      }
+      else {
+        char first = -1;
+        if (input.lastIndexOf('^', i - 1) > first) first = input.lastIndexOf('^', i - 1);
+        else if (input.lastIndexOf('*', i - 1) > first) first = input.lastIndexOf('*', i - 1);
+        else if (input.lastIndexOf('/', i - 1) > first) first = input.lastIndexOf('/', i - 1);
+        else if (input.lastIndexOf('+', i - 1) > first) first = input.lastIndexOf('+', i - 1);
+        else if (input.lastIndexOf('-', i - 1) > first) first = input.lastIndexOf('-', i - 1);
+        char last = -1;
+        if (input.indexOf('^', i + 1) > last) last = input.indexOf('^', i + 1);
+        else if (input.indexOf('*', i + 1) > last) last = input.indexOf('*', i + 1);
+        else if (input.indexOf('/', i + 1) > last) last = input.indexOf('/', i + 1);
+        else if (input.indexOf('+', i + 1) > last) last = input.indexOf('+', i + 1);
+        else if (input.indexOf('-', i + 1) > last) last = input.indexOf('-', i + 1);
+
+        if (first == -1 && last == -1) {
+          String cache = input.substring(0, i);
+          cache.trim();
+          float x = cache.toFloat();
+          cache = input.substring(i + 1);
+          cache.trim();
+          float y = cache.toFloat();
+          if (input.lastIndexOf('^') != -1) return String(pow(x, y));
+          else if (input.lastIndexOf('*') != -1) return String(x * y);
+          else if (input.lastIndexOf('/') != -1) return String(x / y);
+          else if (input.lastIndexOf('+') != -1) return String(x + y);
+          else if (input.lastIndexOf('-') != -1) return String(x - y);
+        }
+        else if (first == -1) {
+          return mathEngine(mathEngine(input.substring(0, last)) + input.substring(last));
+        }
+        else if (last == -1) {
+          return mathEngine(input.substring(0, first + 1) + mathEngine(input.substring(first + 1)));
+        }
+        else {
+          return mathEngine(input.substring(0, first + 1) + mathEngine(input.substring(first + 1, last)) + input.substring(last));
+        }
+      }
+    }
   }
-  else if (input.indexOf('-') != -1) {
-    cache = input.substring(0, input.indexOf('+'));
-    cache.trim();
-    x = cache.toFloat();
-    cache = input.substring(input.indexOf('-') + 1);
-    cache.trim();
-    y = cache.toFloat();
-    s.print(String(x - y));
-    return 1;
-  } else if (input.indexOf('*') != -1) {
-    cache = input.substring(0, input.indexOf('*'));
-    cache.trim();
-    x = cache.toFloat();
-    cache = input.substring(input.indexOf('*') + 1);
-    cache.trim();
-    y = cache.toFloat();
-    s.print(String(x * y));
-    return 1;
-  } else if (input.indexOf('/') != -1) {
-    cache = input.substring(0, input.indexOf('/'));
-    cache.trim();
-    x = cache.toFloat();
-    cache = input.substring(input.indexOf('/') + 1);
-    cache.trim();
-    y = cache.toFloat();
-    s.print(String(x / y));
-    return 1;
-  }
-  else if (input.indexOf('^') != -1) {
-    cache = input.substring(0, input.indexOf('^'));
-    cache.trim();
-    x = cache.toFloat();
-    cache = input.substring(input.indexOf('^') + 1);
-    cache.trim();
-    y = cache.toFloat();
-    s.print(String(pow(x, y)));
-    return 1;
-  } else if (input.indexOf('%') != -1) {
-    cache = input.substring(0, input.indexOf('%'));
-    cache.trim();
-    x = cache.toFloat();
-    cache = input.substring(input.indexOf('%') + 1);
-    cache.trim();
-    y = cache.toFloat();
-    s.print(String((int)x % (int)y));
-    return 1;
-  } else if (input.indexOf("sqrt(") != -1) {
-    cache = input.substring(input.indexOf("sqrt(") + 5, input.indexOf(')'));
-    cache.trim();
-    x = cache.toFloat();
-    s.print(String(sqrt(x)));
-    return 1;
-  }
-  return 0;
+  else return input;
 }
 
 boolean setPin(String input) {
@@ -164,5 +154,9 @@ boolean setPin(String input) {
   return 0;
 
 }
-
+int minornot(int x, int y) {
+  if (x == -1) return y;
+  if (y == -1) return x;
+  else return min(x, y);
+}
 
