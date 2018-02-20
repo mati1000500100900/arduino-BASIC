@@ -83,8 +83,8 @@ String mathEngine(String input) {
   s.print(input);
   s.enter();
   if ((input.indexOf('(') != -1 && input.indexOf(')') != -1) || input.indexOf('^') != -1 || input.indexOf('*') != -1 || input.indexOf('/') != -1 || input.indexOf('+') != -1 || input.indexOf('-') != -1) {
-    if (input.indexOf('(') != -1 && input.indexOf(')') != -1) {
-      return mathEngine(input.substring(0, input.indexOf('(')) + mathEngine(input.substring(input.indexOf('(') + 1, input.indexOf(')'))) + input.substring(input.indexOf(')') + 1));
+    if (input.indexOf('(') != -1 && input.lastIndexOf(')') != -1) {
+      return mathEngine(input.substring(0, input.indexOf('(')) + mathEngine(input.substring(input.indexOf('(') + 1, input.lastIndexOf(')'))) + input.substring(input.lastIndexOf(')') + 1));
     }
     else {
       char i = -1;
