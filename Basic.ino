@@ -54,34 +54,40 @@ void loop() {
 void interpret() {
   String command = String(s.getCommand());
   String firstPart = command.substring(0, command.indexOf(' '));
-  firstPart.toLowerCase();
-  if (firstPart.equals("print")) {
-    if (command.indexOf('"') != -1) {
-      s.print(command.substring(command.indexOf('"') + 1, command.lastIndexOf('"')));
-    }
-    else if (command.indexOf('\'') != -1) {
-      s.print(command.substring(command.indexOf('\'') + 1, command.lastIndexOf('\'')));
-    }
-    else {
-      s.print(mathEngine(command.substring(command.indexOf(' ') + 1)));
-    }
-    s.enter();
+  if (firstPart.toInt()) {
+    
   }
-  else if (firstPart.equals("set")) {
-    if (setPin(command.substring(command.indexOf(' ') + 1)));
+  else {
+    firstPart.toLowerCase();
+    if(firstPart.equals("delay")){
+        delay(command.substring(command.indexOf(' ')+1).toInt());
+      }
+    else if (firstPart.equals("print")) {
+      if (command.indexOf('"') != -1) {
+        s.print(command.substring(command.indexOf('"') + 1, command.lastIndexOf('"')));
+      }
+      else if (command.indexOf('\'') != -1) {
+        s.print(command.substring(command.indexOf('\'') + 1, command.lastIndexOf('\'')));
+      }
+      else {
+        s.print(mathEngine(command.substring(command.indexOf(' ') + 1)));
+      }
+      s.enter();
+    }
+    else if (firstPart.equals("set")) {
+      if (setPin(command.substring(command.indexOf(' ') + 1)));
+      else {
+        s.print("SYNTAX ERROR");
+        s.enter();
+      }
+    }
     else {
       s.print("SYNTAX ERROR");
       s.enter();
     }
   }
-  else {
-    s.print("SYNTAX ERROR");
-    s.enter();
-  }
 }
 String mathEngine(String input) {
-  s.print(input);
-  s.enter();
   if ((input.indexOf('(') != -1 && input.indexOf(')') != -1) || input.indexOf('^') != -1 || input.indexOf('*') != -1 || input.indexOf('/') != -1 || input.indexOf('+') != -1 || input.indexOf('-') != -1) {
     if (input.indexOf('(') != -1 && input.lastIndexOf(')') != -1) {
       return mathEngine(input.substring(0, input.indexOf('(')) + mathEngine(input.substring(input.indexOf('(') + 1, input.lastIndexOf(')'))) + input.substring(input.lastIndexOf(')') + 1));
@@ -116,10 +122,10 @@ String mathEngine(String input) {
         if (first == -1 && last == -1) {
           String cache = input.substring(0, i);
           cache.trim();
-          float x = cache.toFloat();
+          double x = cache.toDouble();
           cache = input.substring(i + 1);
           cache.trim();
-          float y = cache.toFloat();
+          double y = cache.toDouble();
           if (input.lastIndexOf('^') != -1) return String(pow(x, y));
           else if (input.lastIndexOf('*') != -1) return String(x * y);
           else if (input.lastIndexOf('/') != -1) return String(x / y);
